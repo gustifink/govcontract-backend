@@ -1,0 +1,24 @@
+# Core
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic
+pydantic-settings
+
+# Database
+sqlalchemy>=2.0.0
+aiosqlite
+
+# HTTP Client
+httpx
+
+# Data Processing
+yfinance
+rapidfuzz
+
+# Scheduling
+apscheduler
+
+# Development
+pytest
+pytest-asyncio
