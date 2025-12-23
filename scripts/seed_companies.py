@@ -7,10 +7,17 @@ Can be run standalone or imported.
 import asyncio
 import yfinance as yf
 import pandas as pd
-from sqlalchemy.dialects.sqlite import insert
 
+from config import get_settings
 from database import AsyncSessionLocal, Company
 from pipeline.entity_resolution import normalize_company_name
+
+# Use correct dialect for upserts based on database
+_settings = get_settings()
+if 'sqlite' in _settings.database_url:
+    from sqlalchemy.dialects.sqlite import insert
+else:
+    from sqlalchemy.dialects.postgresql import insert
 
 # Comprehensive list of government contractors and publicly traded companies
 # that regularly receive federal contracts

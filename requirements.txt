@@ -8,6 +8,8 @@ pydantic-settings
 # Database
 sqlalchemy>=2.0.0
 aiosqlite
+asyncpg
+psycopg2-binary
 
 # HTTP Client
 httpx

@@ -8,7 +8,14 @@ from typing import Any
 from decimal import Decimal
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy import select
-from sqlalchemy.dialects.sqlite import insert
+from config import get_settings
+
+# Use correct dialect for upserts based on database
+_settings = get_settings()
+if 'sqlite' in _settings.database_url:
+    from sqlalchemy.dialects.sqlite import insert
+else:
+    from sqlalchemy.dialects.postgresql import insert
 
 from database import AsyncSessionLocal, Signal, Company
 from pipeline.ingestion import fetch_contract_awards, parse_contract

@@ -12,6 +12,12 @@ settings = get_settings()
 # Otherwise use PostgreSQL
 db_url = settings.database_url
 
+# Handle PostgreSQL URLs from Railway (they use postgres:// but SQLAlchemy needs postgresql://)
+if db_url.startswith('postgres://'):
+    db_url = db_url.replace('postgres://', 'postgresql+asyncpg://', 1)
+elif db_url.startswith('postgresql://') and '+asyncpg' not in db_url:
+    db_url = db_url.replace('postgresql://', 'postgresql+asyncpg://', 1)
+
 # Ensure SQLite URLs use aiosqlite driver for async support
 if 'sqlite' in db_url and '+aiosqlite' not in db_url:
     db_url = db_url.replace('sqlite:', 'sqlite+aiosqlite:')
