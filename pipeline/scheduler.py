@@ -166,6 +166,26 @@ async def run_pipeline() -> dict[str, Any]:
                     except Exception as e:
                         print(f"  ⚠️  Could not fetch price evolution for {ticker}: {e}")
                     
+                    # First, ensure company exists in database (upsert)
+                    company_stmt = insert(Company).values(
+                        ticker=ticker,
+                        name=company_name or contract["awardee_name"],
+                        name_normalized=company_name.lower() if company_name else contract["awardee_name"].lower(),
+                        market_cap=score_result["market_cap"],
+                        sector=score_result.get("sector"),
+                        avg_volume=score_result.get("avg_volume"),
+                        updated_at=datetime.utcnow()
+                    ).on_conflict_do_update(
+                        index_elements=["ticker"],
+                        set_={
+                            "market_cap": score_result["market_cap"],
+                            "sector": score_result.get("sector"),
+                            "avg_volume": score_result.get("avg_volume"),
+                            "updated_at": datetime.utcnow()
+                        }
+                    )
+                    await db.execute(company_stmt)
+                    
                     # Upsert signal (avoid duplicates)
                     stmt = insert(Signal).values(
                         contract_id=contract["contract_id"],
